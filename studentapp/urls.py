@@ -13,4 +13,5 @@ urlpatterns=[
         path('student/<int:student_id>/edit',student_edit,name='student_edit'),
         path('batch/<int:batch_id>/update',batch_update,name='batch_update'),
         path('student/<int:student_id>/update',student_update,name='student_update'),
+        path('batch/<int:batch_id>/students',BatchWithProduct.as_view(),name='batch-with-students'),
 ]

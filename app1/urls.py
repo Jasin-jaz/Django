@@ -14,4 +14,5 @@ urlpatterns=[
     path('product/<int:product_id>/edit',product_edit,name='product_edit'),
     path('category/<int:category_id>/update',category_update,name='category_update'),
     path('product/<int:product_id>/update',product_update,name='product_update'),
+    path('category/<int:category_id>/products/',CategoryWithProduct.as_view(),name='category-with-product'),
 ]

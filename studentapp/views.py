@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
 from .models import *
 from .serializers import *
@@ -175,3 +175,23 @@ def student_update(request, student_id):
             return Response(status=status.HTTP_204_NO_CONTENT)
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+# Batch with student 
+class BatchWithProduct(APIView):
+    def get(self, request, batch_id, format=None):
+        try: 
+            batch = Batch.objects.get(id=batch_id)
+        except Batch.DoesNotExist:
+            return Response({'error':'Batch not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        batch_serializer = BatchSerializer(batch)
+        students = Student.objects.filter(Batch=batch)
+        student_serializer = StudentSerializer(students, many=True)
+
+        response_data = {
+            'batch' : batch_serializer.data,
+            'student' : student_serializer.data,
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
