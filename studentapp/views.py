@@ -7,6 +7,14 @@ from .models import *
 from .serializers import *
 from rest_framework import status
 
+# View University
+@api_view(['GET'])
+def university_list(request):
+    if request.method == 'GET':
+        university = University.objects.all()
+        serializer = UniversitySerializer(university, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK) 
+
 # View Batch
 @api_view(['GET'])
 def batch_list(request):
@@ -195,3 +203,31 @@ class BatchWithProduct(APIView):
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
+    
+
+# --------------------View
+class UniversityViews(APIView):
+    def get(self, request, university_id, format=None):
+        try: 
+            university = University.objects.get(id=university_id)
+        except University.DoesNotExist:
+            return Response({'error':'Category not found'}, status=status.HTTP_404_NOT_FOUND) 
+        university_serializer = UniversitySerializer(university)
+        batchs = Batch.objects.filter(university=university)
+
+        batch_data = []
+        for batch in batchs:
+            batch_serializer = BatchSerializer(batch)
+            batchs_var = Student.objects.filter(Batch=batch)
+            student_serializer = StudentSerializer(batchs_var, many=True)
+            batch_data.append({
+                'batch': batch_serializer.data,
+                'student': student_serializer.data
+            })        
+
+        response_maindata = {
+            'University': university_serializer.data,
+            'All Batches & students list': batch_data
+        }
+
+        return Response(response_maindata, status=status.HTTP_200_OK)

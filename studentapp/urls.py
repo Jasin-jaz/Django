@@ -1,6 +1,7 @@
 from django.urls import path
 from studentapp.views import *
 urlpatterns=[
+        path('university/list',university_list,name='university_list'),
         path('batch/list',batch_list,name='batch_list'),
         path('student/list',student_list,name='student_list'),
         path('batch/add',add_batch,name='add_batch'),
@@ -14,4 +15,5 @@ urlpatterns=[
         path('batch/<int:batch_id>/update',batch_update,name='batch_update'),
         path('student/<int:student_id>/update',student_update,name='student_update'),
         path('batch/<int:batch_id>/students',BatchWithProduct.as_view(),name='batch-with-students'),
+        path('university/<int:university_id>/',UniversityViews.as_view(),name='university-view'),
 ]

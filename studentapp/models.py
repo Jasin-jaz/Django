@@ -2,14 +2,22 @@ from django.db import models
 
 # Create your models here.
 
+# University
+class University(models.Model):
+    name = models.CharField(max_length=100)
+    place = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 # Batch
 class Batch(models.Model):
-    name = models.CharField(max_length=100)
+    university = models.ForeignKey(University, on_delete=models.CASCADE, null=True, blank=True)
+    batch = models.CharField(max_length=100)
     Year = models.DateField()
 
     def __str__(self):
-        return self.name 
+        return self.batch 
 
 #student
 class Student(models.Model):
