@@ -15,5 +15,6 @@ urlpatterns=[
         path('batch/<int:batch_id>/update',batch_update,name='batch_update'),
         path('student/<int:student_id>/update',student_update,name='student_update'),
         path('batch/<int:batch_id>/students',BatchWithProduct.as_view(),name='batch-with-students'),
-        path('university/<int:university_id>/',UniversityViews.as_view(),name='university-view'),
+        path('university/<int:university_id>/',UniversityIdViews.as_view(),name='university-view'),
+        path('university/',UniversityViews.as_view(),name='university-view'),
 ]

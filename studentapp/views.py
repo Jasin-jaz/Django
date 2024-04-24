@@ -7,6 +7,7 @@ from .models import *
 from .serializers import *
 from rest_framework import status
 
+
 # View University
 @api_view(['GET'])
 def university_list(request):
@@ -205,29 +206,58 @@ class BatchWithProduct(APIView):
         return Response(response_data, status=status.HTTP_200_OK)
     
 
-# --------------------View
-class UniversityViews(APIView):
+# --------------------View university details with batch,student by id
+class UniversityIdViews(APIView):
     def get(self, request, university_id, format=None):
         try: 
             university = University.objects.get(id=university_id)
         except University.DoesNotExist:
             return Response({'error':'Category not found'}, status=status.HTTP_404_NOT_FOUND) 
         university_serializer = UniversitySerializer(university)
-        batchs = Batch.objects.filter(university=university)
-
+        batch = Batch.objects.filter(university=university)
+        final_data = []
         batch_data = []
-        for batch in batchs:
+        for batch in batch:
             batch_serializer = BatchSerializer(batch)
             batchs_var = Student.objects.filter(Batch=batch)
             student_serializer = StudentSerializer(batchs_var, many=True)
-            batch_data.append({
-                'batch': batch_serializer.data,
-                'student': student_serializer.data
-            })        
-
+            # batch_data.append({
+            #     'batch': batch_serializer.data,
+            #     'student': student_serializer.data
+            # })        
+            batch_data = batch_serializer.data
+            batch_data['students'] = student_serializer.data
+            final_data.append(batch_data)
         response_maindata = {
             'University': university_serializer.data,
-            'All Batches & students list': batch_data
+            'batch': final_data
         }
 
         return Response(response_maindata, status=status.HTTP_200_OK)
+
+# View all university with batchs & students
+class UniversityViews(APIView):
+    def get(self, request, format=None):
+        universities = University.objects.all()
+        response_data = []
+
+        for university in universities:
+            university_serializer = UniversitySerializer(university)
+            batches = Batch.objects.filter(university=university)
+            batch_data = []
+
+            for batch in batches:
+                batch_serializer = BatchSerializer(batch)
+                students = Student.objects.filter(Batch=batch)
+                student_serializer = StudentSerializer(students, many=True)
+                batch_data.append({
+                    'batch': batch_serializer.data,
+                    'students': student_serializer.data
+                })
+
+            response_data.append({
+                'University': university_serializer.data,
+                'Details of batchs & students': batch_data
+            })
+
+        return Response(response_data, status=status.HTTP_200_OK)
